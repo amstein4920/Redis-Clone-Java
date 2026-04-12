@@ -10,7 +10,7 @@ import Commands.*;
 
 public class Main {
 
-    private static HashMap<String, Command> registry = new HashMap<>();
+    private static final HashMap<String, Command> registry = new HashMap<>();
 
     public static void main(String[] args) {
         int port = 6379;
@@ -48,21 +48,38 @@ public class Main {
                     // No more inputs, end loop
                     break;
                 }
-                int argsCount = Integer.parseInt(firstInput.substring(1)) - 1;
-                final String[] args = new String[argsCount];
 
-                // Eat the size input
-                inputStream.readLine();
+                try {
+                    if (!firstInput.startsWith("*")) {
+                        outputStream.write("-ERR invalid request format\r\n".getBytes());
+                        outputStream.flush();
+                    }
 
-                Command command = registry.get(inputStream.readLine());
+                    int argsCount = Integer.parseInt(firstInput.substring(1)) - 1;
+                    final String[] args = new String[argsCount];
 
-                for (int i = 0; i < args.length; i++) {
-                    // Eat each size input
+                    // Eat the size input
                     inputStream.readLine();
-                    args[i] = inputStream.readLine();
-                }
 
-                outputStream.write(command.execute(args).getBytes());
+                    Command command = registry.get(inputStream.readLine().toUpperCase());
+                    if (command == null) {
+                        outputStream.write("-ERR unknown command\r\n".getBytes());
+                        outputStream.flush();
+                        continue;
+                    }
+
+                    for (int i = 0; i < args.length; i++) {
+                        // Eat each size input
+                        inputStream.readLine();
+                        args[i] = inputStream.readLine();
+                    }
+
+                    outputStream.write(command.execute(args).getBytes());
+                    outputStream.flush();
+                } catch (Exception e) {
+                    outputStream.write("-ERR server error\r\n".getBytes());
+                    outputStream.flush();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
