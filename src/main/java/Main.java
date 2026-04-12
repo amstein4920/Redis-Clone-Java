@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.HashMap;
 
 import Commands.*;
+import DataStorage.DataStore;
 
 public class Main {
 
@@ -53,6 +54,7 @@ public class Main {
                     if (!firstInput.startsWith("*")) {
                         outputStream.write("-ERR invalid request format\r\n".getBytes());
                         outputStream.flush();
+                        continue;
                     }
 
                     int argsCount = Integer.parseInt(firstInput.substring(1)) - 1;

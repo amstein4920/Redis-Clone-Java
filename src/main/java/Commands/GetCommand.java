@@ -1,5 +1,7 @@
 package Commands;
 
+import DataStorage.DataStore;
+
 public class GetCommand implements Command {
 
     private DataStore store;

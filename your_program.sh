@@ -21,4 +21,5 @@ set -e # Exit early if any commands fail
 #
 # - Edit this to change how your program runs locally
 # - Edit .codecrafters/run.sh to change how your program runs remotely
-exec java --enable-preview -jar /tmp/codecrafters-build-redis-java/codecrafters-redis.jar "$@"
+# exec java --enable-preview -jar /tmp/codecrafters-build-redis-java/codecrafters-redis.jar "$@"
+exec java --enable-preview --sun-misc-unsafe-memory-access=allow -jar /tmp/codecrafters-build-redis-java/codecrafters-redis.jar "$@"
