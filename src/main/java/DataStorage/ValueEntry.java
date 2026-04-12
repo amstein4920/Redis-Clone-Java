@@ -12,6 +12,9 @@ public class ValueEntry {
     }
 
     public static Builder builder(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
+        }
         return new Builder(value);
     }
 

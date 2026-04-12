@@ -13,6 +13,9 @@ public class DataStore {
 
     public synchronized String getEntity(String key) {
         ValueEntry entry = store.get(key);
+        if (entry == null) {
+            return null;
+        }
 
         if (entry.getExpiry() != null && entry.getExpiry().compareTo(Instant.now()) <= 0) {
             store.remove(key);
