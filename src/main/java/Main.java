@@ -42,60 +42,27 @@ public class Main {
             OutputStream outputStream = socket.getOutputStream();
             BufferedReader inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while (true) {
+
                 String firstInput = inputStream.readLine();
-                if (firstInput != null) {
-                    if ("*1".equals(firstInput)) {
-                        // This is just a PING. We don't need to do anything other than clear the buffer
-                        // with reads and respond with our PONG
-                        inputStream.readLine();
-                        inputStream.readLine();
-
-                        Command command = registry.get("PING");
-
-                        outputStream.write(command.execute(null).getBytes());
-                    } else if ("*2".equals(firstInput)) {
-                        // Eat the size input
-                        inputStream.readLine();
-
-                        Command command = registry.get(inputStream.readLine());
-                        String[] args = new String[1];
-
-                        switch (command) {
-                            case EchoCommand _:
-                            case GetCommand _:
-                                // Eat the size input then read argument
-                                inputStream.readLine();
-                                args[0] = inputStream.readLine();
-                                break;
-                            default:
-                        }
-
-                        outputStream.write(command.execute(args).getBytes());
-
-                    } else if ("*3".equals(firstInput)) {
-                        // Eat the size input
-                        inputStream.readLine();
-
-                        Command command = registry.get(inputStream.readLine());
-                        String[] args = new String[2];
-
-                        switch (command) {
-                            case SetCommand _:
-                                // Eat the size input
-                                inputStream.readLine();
-                                args[0] = inputStream.readLine();
-                                inputStream.readLine();
-                                args[1] = inputStream.readLine();
-
-                                break;
-                            default:
-                        }
-
-                        outputStream.write(command.execute(args).getBytes());
-                    } else {
-                        break;
-                    }
+                if (firstInput == null) {
+                    // No more inputs, end loop
+                    break;
                 }
+                int argsCount = Integer.parseInt(firstInput.substring(1)) - 1;
+                final String[] args = new String[argsCount];
+
+                // Eat the size input
+                inputStream.readLine();
+
+                Command command = registry.get(inputStream.readLine());
+
+                for (int i = 0; i < args.length; i++) {
+                    // Eat each size input
+                    inputStream.readLine();
+                    args[i] = inputStream.readLine();
+                }
+
+                outputStream.write(command.execute(args).getBytes());
             }
         } catch (IOException e) {
             e.printStackTrace();
