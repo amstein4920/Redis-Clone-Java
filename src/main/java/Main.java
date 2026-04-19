@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.HashMap;
 
 import Commands.*;
+import Configuration.Config;
+import Configuration.Config.Builder;
 import DataStorage.DataStore;
 
 public class Main {
@@ -15,6 +17,22 @@ public class Main {
 
     public static void main(String[] args) {
         int port = 6379;
+
+        Config.Builder builder = new Builder();
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i].toLowerCase()) {
+                case "--dir":
+                    i++;
+                    builder.setDir(args[i]);
+                    break;
+                case "--dbfilename":
+                    i++;
+                    builder.setDbFileName(args[i]);
+                    break;
+            }
+        }
+        Config.initialize(builder);
+
         DataStore store = new DataStore();
 
         // Populate command registry before doing anything else
@@ -22,6 +40,7 @@ public class Main {
         registry.put("ECHO", new EchoCommand());
         registry.put("SET", new SetCommand(store));
         registry.put("GET", new GetCommand(store));
+        registry.put("CONFIG", new ConfigCommand());
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             // Since the tester restarts the program quite often, setting ReuseAddress
@@ -63,7 +82,8 @@ public class Main {
                     // Eat the size input
                     inputStream.readLine();
 
-                    Command command = registry.get(inputStream.readLine().toUpperCase());
+                    String com = inputStream.readLine().toUpperCase();
+                    Command command = registry.get(com);
                     if (command == null) {
                         outputStream.write("-ERR unknown command\r\n".getBytes());
                         outputStream.flush();

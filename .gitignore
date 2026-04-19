@@ -27,3 +27,4 @@ replay_pid*
 .vscode/
 target/
 codecrafters.yml
+eclipse-formatter.xml
