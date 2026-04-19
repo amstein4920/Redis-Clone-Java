@@ -23,11 +23,19 @@ public class ConfigCommand implements Command {
         for (String arg : Arrays.copyOfRange(args, 1, args.length)) {
             switch (arg.toLowerCase()) {
                 case "dir":
-                    value = config.getDir().toString();
-                    return String.format("*2\r\n$3\r\ndir\r\n$%d\r\n%s\r\n", value.length(), value);
+                    try {
+                        value = config.getDir().toString();
+                        return String.format("*2\r\n$3\r\ndir\r\n$%d\r\n%s\r\n", value.length(), value);
+                    } catch (IllegalStateException e) {
+                        // Value not configured, return empty
+                    }
                 case "dbfilename":
-                    value = config.getDbFileName().toString();
-                    return String.format("*2\r\n$10\r\ndbfilename\r\n$%d\r\n%s\r\n", value.length(), value);
+                    try {
+                        value = config.getDbFileName().toString();
+                        return String.format("*2\r\n$10\r\ndbfilename\r\n$%d\r\n%s\r\n", value.length(), value);
+                    } catch (IllegalStateException e) {
+                        // Value not configured, return empty
+                    }
             }
         }
         return "*0\r\n";

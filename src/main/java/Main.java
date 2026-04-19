@@ -82,8 +82,7 @@ public class Main {
                     // Eat the size input
                     inputStream.readLine();
 
-                    String com = inputStream.readLine().toUpperCase();
-                    Command command = registry.get(com);
+                    Command command = registry.get(inputStream.readLine().toUpperCase());
                     if (command == null) {
                         outputStream.write("-ERR unknown command\r\n".getBytes());
                         outputStream.flush();

@@ -47,6 +47,10 @@ public class Config {
                 throw new IllegalArgumentException("Invalid dir argument: " + dString);
             }
 
+            // if (!Files.exists(path) || !Files.isDirectory(path)) {
+            // throw new IllegalArgumentException("Path is not accessible: " + dString);
+            // }
+
             this.dir = path;
             return this;
         }
@@ -59,6 +63,10 @@ public class Config {
                 throw new IllegalArgumentException("Invalid dbFileName argument: " + dString);
             }
 
+            // if (!Files.exists(path) || !Files.isDirectory(path)) {
+            // throw new IllegalArgumentException("Path is not accessible: " + dString);
+            // }
+
             this.dbFileName = path;
             return this;
         }
@@ -69,10 +77,16 @@ public class Config {
     }
 
     public Path getDir() {
+        if (dir == null) {
+            throw new IllegalStateException("dir has not been configured");
+        }
         return dir;
     }
 
     public Path getDbFileName() {
+        if (dbFileName == null) {
+            throw new IllegalStateException("dbfilename has not been configured");
+        }
         return dbFileName;
     }
 }
