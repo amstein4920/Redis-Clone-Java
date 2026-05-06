@@ -3,9 +3,19 @@ package DataStorage;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DataStore {
-    private final Map<String, ValueEntry> store = new HashMap<>();
+    private final Map<String, ValueEntry> store;
+
+    public DataStore() {
+        this.store = new HashMap<>();
+    }
+
+    public DataStore(int size) {
+        int actualCapacity = (int) ((size / 0.75) + 1);
+        this.store = new HashMap<>(actualCapacity);
+    }
 
     public synchronized void setEntity(String key, ValueEntry entry) {
         store.put(key, entry);
@@ -23,5 +33,9 @@ public class DataStore {
         }
 
         return entry.getValue();
+    }
+
+    public synchronized Set<String> getKeys() {
+        return store.keySet();
     }
 }

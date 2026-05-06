@@ -3,6 +3,7 @@ package Commands;
 import java.util.Arrays;
 
 import Configuration.Config;
+import Utils.RESP;
 
 public class ConfigCommand implements Command {
 
@@ -15,7 +16,7 @@ public class ConfigCommand implements Command {
                 return get(args, config);
         }
 
-        return "*0\r\n";
+        return RESP.bulkString("");
     }
 
     private String get(String[] args, Config config) {
@@ -25,19 +26,19 @@ public class ConfigCommand implements Command {
                 case "dir":
                     try {
                         value = config.getDir().toString();
-                        return String.format("*2\r\n$3\r\ndir\r\n$%d\r\n%s\r\n", value.length(), value);
+                        return RESP.array("dir", value);
                     } catch (IllegalStateException e) {
                         // Value not configured, return empty
                     }
                 case "dbfilename":
                     try {
                         value = config.getDbFileName().toString();
-                        return String.format("*2\r\n$10\r\ndbfilename\r\n$%d\r\n%s\r\n", value.length(), value);
+                        return RESP.array("dbFileName", value);
                     } catch (IllegalStateException e) {
                         // Value not configured, return empty
                     }
             }
         }
-        return "*0\r\n";
+        return RESP.bulkString("");
     }
 }

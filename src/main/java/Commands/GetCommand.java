@@ -1,6 +1,7 @@
 package Commands;
 
 import DataStorage.DataStore;
+import Utils.RESP;
 
 public class GetCommand implements Command {
 
@@ -15,8 +16,8 @@ public class GetCommand implements Command {
         String entity = store.getEntity(args[0]);
 
         if (entity == null) {
-            return "$-1\r\n";
+            return RESP.nullBulkString();
         }
-        return String.format("$%d\r\n%s\r\n", entity.length(), entity);
+        return RESP.bulkString(entity);
     }
 }

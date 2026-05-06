@@ -30,8 +30,9 @@ public class ValueEntry {
             this.value = value;
         }
 
-        public Builder expiry(long expiryInput) {
-            this.expiry = Instant.now().plusMillis(expiryInput);
+        // Always in milliseconds
+        public Builder expiry(Instant expiry) {
+            this.expiry = expiry;
             return this;
         }
 

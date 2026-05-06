@@ -1,7 +1,10 @@
 package Commands;
 
+import java.time.Instant;
+
 import DataStorage.DataStore;
 import DataStorage.ValueEntry;
+import Utils.RESP;
 
 public class SetCommand implements Command {
     private DataStore store;
@@ -21,13 +24,13 @@ public class SetCommand implements Command {
             // Currently only PX flag is available
             switch (flag) {
                 case "PX":
-                    entryBuilder.expiry(Long.parseLong(args[i + 1]));
+                    entryBuilder.expiry(Instant.now().plusMillis(Long.parseLong(args[i + 1])));
                     break;
             }
         }
 
         store.setEntity(key, entryBuilder.build());
-        return "+OK\r\n";
+        return RESP.simpleString("OK");
     }
 
 }

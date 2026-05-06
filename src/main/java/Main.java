@@ -1,15 +1,20 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 import Commands.*;
 import Configuration.Config;
 import Configuration.Config.Builder;
 import DataStorage.DataStore;
+import DataStorage.RdbLoader;
+import Utils.RESP;
 
 public class Main {
 
@@ -32,8 +37,19 @@ public class Main {
             }
         }
         Config.initialize(builder);
+        Config config = Config.getInstance();
 
         DataStore store = new DataStore();
+
+        if (config.getDir() != null && config.getDbFileName() != null) {
+            RdbLoader loader = new RdbLoader();
+            Path path = config.getDir().resolve(config.getDbFileName());
+            try (PushbackInputStream stream = new PushbackInputStream(new FileInputStream(path.toFile()))) {
+                loader.load(stream, store);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         // Populate command registry before doing anything else
         registry.put("PING", new PingCommand());
@@ -41,6 +57,7 @@ public class Main {
         registry.put("SET", new SetCommand(store));
         registry.put("GET", new GetCommand(store));
         registry.put("CONFIG", new ConfigCommand());
+        registry.put("KEYS", new KeysCommand(store));
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             // Since the tester restarts the program quite often, setting ReuseAddress
@@ -71,7 +88,7 @@ public class Main {
 
                 try {
                     if (!firstInput.startsWith("*")) {
-                        outputStream.write("-ERR invalid request format\r\n".getBytes());
+                        outputStream.write(RESP.simpleErrorString("ERR invalid request format").getBytes());
                         outputStream.flush();
                         continue;
                     }
@@ -84,7 +101,7 @@ public class Main {
 
                     Command command = registry.get(inputStream.readLine().toUpperCase());
                     if (command == null) {
-                        outputStream.write("-ERR unknown command\r\n".getBytes());
+                        outputStream.write(RESP.simpleErrorString("ERR unknown command").getBytes());
                         outputStream.flush();
                         continue;
                     }
@@ -98,7 +115,7 @@ public class Main {
                     outputStream.write(command.execute(args).getBytes());
                     outputStream.flush();
                 } catch (Exception e) {
-                    outputStream.write("-ERR server error\r\n".getBytes());
+                    outputStream.write(RESP.simpleErrorString("ERR server error").getBytes());
                     outputStream.flush();
                 }
             }
