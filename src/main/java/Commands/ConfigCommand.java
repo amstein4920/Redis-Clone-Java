@@ -33,7 +33,7 @@ public class ConfigCommand implements Command {
                 case "dbfilename":
                     try {
                         value = config.getDbFileName().toString();
-                        return RESP.array("dbFileName", value);
+                        return RESP.array("dbfilename", value);
                     } catch (IllegalStateException e) {
                         // Value not configured, return empty
                     }
