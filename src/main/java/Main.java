@@ -21,6 +21,7 @@ public class Main {
     private static final HashMap<String, Command> registry = new HashMap<>();
 
     public static void main(String[] args) {
+        // Default port
         int port = 6379;
 
         Config.Builder builder = new Builder();
@@ -33,6 +34,10 @@ public class Main {
                 case "--dbfilename":
                     i++;
                     builder.setDbFileName(args[i]);
+                    break;
+                case "--port":
+                    i++;
+                    port = Integer.parseInt(args[i]);
                     break;
             }
         }
