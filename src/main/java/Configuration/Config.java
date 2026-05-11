@@ -68,17 +68,13 @@ public class Config {
         }
     }
 
+    // Can return null
     public Path getDir() {
-        // if (dir == null) {
-        // throw new IllegalStateException("dir has not been configured");
-        // }
         return dir;
     }
 
+    // Can return null
     public Path getDbFileName() {
-        // if (dbFileName == null) {
-        // throw new IllegalStateException("dbfilename has not been configured");
-        // }
         return dbFileName;
     }
 }

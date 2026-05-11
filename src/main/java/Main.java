@@ -12,6 +12,7 @@ import java.util.HashMap;
 import Commands.*;
 import Configuration.Config;
 import Configuration.Config.Builder;
+import Configuration.ServerData;
 import DataStorage.DataStore;
 import DataStorage.RdbLoader;
 import Utils.RESP;
@@ -23,6 +24,10 @@ public class Main {
     public static void main(String[] args) {
         // Default port
         int port = 6379;
+
+        ServerData serverData = new ServerData();
+
+        serverData.setEntity("role", "master");
 
         Config.Builder builder = new Builder();
         for (int i = 0; i < args.length; i++) {
@@ -38,6 +43,10 @@ public class Main {
                 case "--port":
                     i++;
                     port = Integer.parseInt(args[i]);
+                    break;
+                case "--replicaof":
+                    i++;
+                    serverData.setEntity("role", "slave");
                     break;
             }
         }
@@ -63,6 +72,7 @@ public class Main {
         registry.put("GET", new GetCommand(store));
         registry.put("CONFIG", new ConfigCommand());
         registry.put("KEYS", new KeysCommand(store));
+        registry.put("INFO", new InfoCommand(serverData));
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             // Since the tester restarts the program quite often, setting ReuseAddress
